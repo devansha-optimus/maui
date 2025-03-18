@@ -8,12 +8,27 @@ steps:
 - task: CmdLine@2
   inputs:
     script: 'dotnet workload install maui'
+  displayName: 'Install .NET MAUI Workload'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      dotnet workload list
+      dotnet --list-sdks
+    displayName: 'Validate Workload Installation'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: 'MyMAUIProject.sln'
+  displayName: 'Restore Dependencies'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
     projects: 'MyMAUIProject.sln'
-    arguments: '-c Release -f net6.0-android'
+    arguments: '-c Release -f net6.0-android --verbosity detailed'
+  displayName: 'Build Project with Detailed Logs'
 
 - task: CopyFiles@2
   inputs:
@@ -21,9 +36,11 @@ steps:
     Contents: '**/*-Signed.aab'
     TargetFolder: '$(build.artifactstagingdirectory)'
     flattenFolders: true
+  displayName: 'Copy Signed .AAB Files'
 
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+  displayName: 'Publish Build Artifacts'
