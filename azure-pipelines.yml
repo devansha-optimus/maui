@@ -17,6 +17,11 @@ steps:
       dotnet --list-sdks
     displayName: 'Validate Workload Installation'
 
+- task: CmdLine@2
+  inputs:
+    script: 'dotnet nuget locals all --clear'
+  displayName: 'Clear NuGet Cache'
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
